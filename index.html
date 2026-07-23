@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Ventas - Bingo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-slate-950 text-slate-100 min-h-screen p-3 md:p-6 font-sans">
+
+    <!-- Contenedor Principal -->
+    <div class="max-w-6xl mx-auto space-y-6">
+
+        <!-- Header / Navbar -->
+        <header
+            class="bg-slate-900 border border-slate-800 rounded-2xl p-4 md:p-6 shadow-xl flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="p-3 bg-indigo-600/20 text-indigo-400 rounded-xl border border-indigo-500/30">
+                    <i class="fa-solid fa-ticket text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold tracking-tight text-white">Bingo Master</h1>
+                    <p class="text-xs text-slate-400">Sistema Avanzado de Registro y Control de Cartones</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="btnTabVenta" onclick="switchTab('venta')"
+                    class="px-4 py-2 rounded-xl text-sm font-semibold transition bg-indigo-600 text-white shadow-lg shadow-indigo-600/30">
+                    <i class="fa-solid fa-cart-plus mr-1.5"></i> Nueva Venta
+                </button>
+                <button id="btnTabConsultas" onclick="switchTab('consultas')"
+                    class="px-4 py-2 rounded-xl text-sm font-semibold transition bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700">
+                    <i class="fa-solid fa-chart-pie mr-1.5"></i> Reportes y Filtros
+                </button>
+            </div>
+        </header>
+
+        <!-- SECCIÓN 1: FORMULARIO DE NUEVA VENTA -->
+        <div id="sectionVenta" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- Columna Izquierda: Formulario -->
+            <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-5 md:p-6 shadow-xl space-y-5">
+                <h2 class="text-lg font-bold text-slate-200 border-b border-slate-800 pb-3 flex items-center">
+                    <i class="fa-solid fa-cash-register text-indigo-400 mr-2"></i> Datos de la Venta
+                </h2>
+
+                <form id="bingoForm" class="space-y-4">
+
+                    <!-- Vendedor y Comprador -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label
+                                class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Vendedor
+                                *</label>
+                            <input type="text" id="vendedor" required placeholder="Ej: Juan Pérez"
+                                class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none transition text-sm text-white placeholder-slate-600">
+                        </div>
+                        <div>
+                            <label
+                                class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Comprador
+                                <span class="text-slate-500 font-normal lowercase">(opcional)</span></label>
+                            <input type="text" id="comprador" placeholder="Ej: Maria Gómez"
+                                class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none transition text-sm text-white placeholder-slate-600">
+                        </div>
+                    </div>
+
+                    <!-- Selección de Cartones -->
+                    <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800/80 space-y-3">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                            <label
+                                class="block text-xs font-semibold text-indigo-400 uppercase tracking-wider">Asignación
+                                de Cartones *</label>
+                            <!-- Toggle Modo de Ingreso -->
+                            <div class="inline-flex p-0.5 bg-slate-900 rounded-lg border border-slate-800 text-xs">
+                                <button type="button" id="btnModoRango" onclick="setModoCartones('rango')"
+                                    class="px-2.5 py-1 rounded-md font-medium text-white bg-indigo-600 shadow-sm transition">
+                                    Rango (Desde - Hasta)
+                                </button>
+                                <button type="button" id="btnModoManual" onclick="setModoCartones('manual')"
+                                    class="px-2.5 py-1 rounded-md font-medium text-slate-400 hover:text-white transition">
+                                    Manual / Lista
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Campos Rango (Ingreso Manual de Desde - Hasta) -->
+                        <div id="inputRangoGroup" class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-400 mb-1">Desde el Nº *</label>
+                                <input type="number" id="cartonDesde" min="1" placeholder="Ej: 101"
+                                    class="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-center font-mono font-bold text-white placeholder-slate-600">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-400 mb-1">Hasta el Nº *</label>
+                                <input type="number" id="cartonHasta" min="1" placeholder="Ej: 150"
+                                    class="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-center font-mono font-bold text-white placeholder-slate-600">
+                            </div>
+                        </div>
+
+                        <!-- Campos Lista Manual -->
+                        <div id="inputManualGroup" class="hidden">
+                            <label class="block text-[11px] font-medium text-slate-400 mb-1">Números de cartón (separados por comas)</label>
+                            <input type="text" id="cartonesLista" placeholder="Ej: 12, 15, 88, 104"
+                                class="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-mono text-sm text-white placeholder-slate-600">
+                        </div>
+
+                        <!-- Vista previa de cartones & Validación de duplicados -->
+                        <div id="validationBox"
+                            class="p-2.5 rounded-lg text-xs bg-slate-900 border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+                            <span class="text-slate-400">Total cartones: <strong id="lblCantidadCartones"
+                                    class="text-white">0</strong></span>
+                            <span id="lblValidationStatus" class="text-slate-500 flex items-center">
+                                <i class="fa-solid fa-circle-info mr-1"></i> Ingrese números
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Precio Unitario y Métodos de Pago -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label
+                                class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Precio
+                                Unitario ($)</label>
+                            <input type="number" id="precioUnitario" value="1000" min="0" required
+                                class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold text-emerald-400 text-base">
+                        </div>
+
+                        <div>
+                            <label
+                                class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Forma
+                                de Pago</label>
+                            <select id="formaPago" onchange="toggleMontoMixto()"
+                                class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm text-white">
+                                <option value="efectivo">Efectivo (100%)</option>
+                                <option value="transferencia">Transferencia (100%)</option>
+                                <option value="mixto">Mixto (Efectivo + Transferencia)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Desglose de Pago Mixto -->
+                    <div id="mixtoContainer"
+                        class="hidden bg-slate-950/60 p-4 rounded-xl border border-amber-500/30 space-y-3">
+                        <label class="block text-xs font-semibold text-amber-400 uppercase tracking-wider">Desglose de
+                            Pago Mixto</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-400 mb-1">Monto Efectivo
+                                    ($)</label>
+                                <input type="number" id="montoEfectivo" min="0" value="0"
+                                    class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none text-emerald-400 font-bold">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-400 mb-1">Monto Transferencia
+                                    ($)</label>
+                                <input type="number" id="montoTransferencia" min="0" value="0"
+                                    class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none text-sky-400 font-bold">
+                            </div>
+                        </div>
+                        <p id="mixtoError" class="text-[11px] text-rose-400 hidden font-medium">⚠️ La suma de efectivo y
+                            transferencia debe coincidir exactamente con el total.</p>
+                    </div>
+
+                    <!-- Resumen Total y Botón de Cobro -->
+                    <div class="pt-2">
+                        <div
+                            class="bg-indigo-950/40 p-4 rounded-xl border border-indigo-500/30 flex justify-between items-center mb-4">
+                            <div>
+                                <span class="text-xs uppercase font-semibold text-indigo-300 block">Total A
+                                    Cobrar</span>
+                                <span class="text-xs text-slate-400" id="lblDetalleTotal">0 cartones × $1,000</span>
+                            </div>
+                            <span id="previewTotal" class="text-3xl font-extrabold text-emerald-400">$0</span>
+                        </div>
+
+                        <button type="submit" id="btnSubmit"
+                            class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 active:scale-[0.99] transition-all font-bold text-slate-950 rounded-xl shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2 text-base">
+                            <i class="fa-solid fa-check-circle"></i>
+                            <span>Confirmar y Registrar Venta</span>
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- Columna Derecha: Tarjeta de Balance & Confirmación -->
+            <div class="lg:col-span-5 space-y-6">
+
+                <!-- Totales Rápidos del Evento -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                        <span class="flex items-center">
+                            <i class="fa-solid fa-vault text-amber-400 mr-2"></i> Balance del Bingo
+                        </span>
+                        <span class="text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                            <i class="fa-solid fa-percent text-[9px]"></i> Pozo 20%
+                        </span>
+                    </h3>
+
+                    <!-- Caja Destacada: Pozo del Sorteo (20%) -->
+                    <div class="bg-gradient-to-r from-amber-950/40 via-amber-900/20 to-slate-950 p-4 rounded-xl border border-amber-500/30 shadow-lg relative overflow-hidden">
+                        <div class="flex justify-between items-center relative z-10">
+                            <div>
+                                <span class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5 mb-0.5">
+                                    <i class="fa-solid fa-trophy text-amber-400"></i> Pozo del Sorteo (20%)
+                                </span>
+                                <span class="text-[11px] text-slate-400">Monto acumulado para premios</span>
+                            </div>
+                            <span id="boxPozoSorteo" class="text-2xl font-black text-amber-300 drop-shadow">$0</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+                            <span class="text-[11px] font-medium text-slate-400 block mb-1">Recaudación Total</span>
+                            <span id="boxTotalRecaudado" class="text-xl font-extrabold text-emerald-400">$0</span>
+                        </div>
+                        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+                            <span class="text-[11px] font-medium text-slate-400 block mb-1">Cartones Vendidos</span>
+                            <span id="boxTotalCartones" class="text-xl font-extrabold text-indigo-400">0</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div
+                            class="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800 flex justify-between items-center">
+                            <span class="text-slate-400"><i class="fa-solid fa-money-bill text-emerald-400 mr-1"></i>
+                                Efec:</span>
+                            <strong id="boxTotalEfectivo" class="text-slate-200">$0</strong>
+                        </div>
+                        <div
+                            class="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800 flex justify-between items-center">
+                            <span class="text-slate-400"><i
+                                    class="fa-solid fa-mobile-screen-button text-sky-400 mr-1"></i> Transf:</span>
+                            <strong id="boxTotalTransf" class="text-slate-200">$0</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Confirmación de última venta -->
+                <div id="lastSaleCard"
+                    class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3 hidden">
+                    <div class="flex items-center space-x-2 text-emerald-400 font-bold text-sm">
+                        <i class="fa-solid fa-circle-check text-lg"></i>
+                        <span>¡Venta registrada con éxito!</span>
+                    </div>
+                    <div id="lastSaleDetails"
+                        class="text-xs text-slate-300 bg-slate-950 p-3.5 rounded-xl space-y-2 border border-slate-800 font-mono">
+                        <!-- Contenido dinámico -->
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- SECCIÓN 2: REPORTES Y FILTRADO POR VENDEDORES -->
+        <div id="sectionConsultas"
+            class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-5 md:p-6 shadow-xl space-y-6">
+
+            <div
+                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800 pb-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-100 flex items-center">
+                        <i class="fa-solid fa-filter text-indigo-400 mr-2"></i> Reportes y Consulta por Vendedor
+                    </h2>
+                    <p class="text-xs text-slate-400">Filtra las ventas realizadas y analiza el rendimiento individual.
+                    </p>
+                </div>
+
+                <!-- Filtros -->
+                <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                    <select id="filtroVendedor" onchange="aplicarFiltros()"
+                        class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-indigo-500">
+                        <option value="todos">Todos los Vendedores</option>
+                    </select>
+                    <select id="filtroMetodo" onchange="aplicarFiltros()"
+                        class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-indigo-500">
+                        <option value="todos">Todos los Métodos de Pago</option>
+                        <option value="efectivo">Efectivo</option>
+                        <option value="transferencia">Transferencia</option>
+                        <option value="mixto">Mixto</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Tarjetas Resumen del Filtro -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+                    <span class="text-[11px] text-slate-400 block mb-1">Ventas Filtradas</span>
+                    <span id="fTotalMonto" class="text-lg font-extrabold text-emerald-400">$0</span>
+                </div>
+                <div class="bg-slate-950 p-3.5 rounded-xl border border-amber-500/30 bg-gradient-to-b from-amber-950/20 to-slate-950">
+                    <span class="text-[11px] text-amber-400/90 font-medium block mb-1 flex items-center gap-1">
+                        <i class="fa-solid fa-trophy text-amber-400 text-[10px]"></i> Pozo (20%)
+                    </span>
+                    <span id="fTotalPozo" class="text-lg font-extrabold text-amber-300">$0</span>
+                </div>
+                <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+                    <span class="text-[11px] text-slate-400 block mb-1">Cartones en Filtro</span>
+                    <span id="fTotalCartones" class="text-lg font-extrabold text-indigo-400">0</span>
+                </div>
+                <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+                    <span class="text-[11px] text-slate-400 block mb-1">Efectivo Filtrado</span>
+                    <span id="fTotalEfec" class="text-lg font-extrabold text-slate-200">$0</span>
+                </div>
+                <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+                    <span class="text-[11px] text-slate-400 block mb-1">Transf. Filtrada</span>
+                    <span id="fTotalTransf" class="text-lg font-extrabold text-slate-200">$0</span>
+                </div>
+            </div>
+
+            <!-- Tabla de Ventas -->
+            <div class="overflow-x-auto rounded-xl border border-slate-800">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-950 text-slate-400 uppercase font-semibold border-b border-slate-800">
+                        <tr>
+                            <th class="p-3">Fecha / Hora</th>
+                            <th class="p-3">Vendedor</th>
+                            <th class="p-3">Comprador</th>
+                            <th class="p-3">Cartones Vendidos</th>
+                            <th class="p-3">Forma Pago</th>
+                            <th class="p-3 text-right">Total ($)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaVentasBody" class="divide-y divide-slate-800/60 bg-slate-900/50">
+                        <!-- Filas dinámicas -->
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbykZajZB-FLx-oP8yDE0wCTpt5hvpyYNMKkUg9_UYiJvfPrcoUj8Qh9DJSfCpXbeZ5C/exec';
+
+        let modoIngresoCartones = 'rango';
+        let cartonesSeleccionados = [];
+        let cartonesValidos = false;
+
+        let dbVentas = [];
+        let cartonesVendidosGlobal = new Set(); // Evita duplicados en la sesión
+
+        // Cargar ventas históricas desde Google Sheets apenas inicia la aplicación
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarVentasHistorial();
+        });
+
+        async function cargarVentasHistorial() {
+            if (!SCRIPT_URL || SCRIPT_URL.trim() === '') return;
+
+            try {
+                const res = await fetch(SCRIPT_URL);
+                const data = await res.json();
+
+                if (data.status === "success" && Array.isArray(data.ventas)) {
+                    dbVentas = data.ventas;
+                    cartonesVendidosGlobal.clear();
+
+                    // Reconstruir los cartones vendidos para mantener activa la validación antiduplicados
+                    dbVentas.forEach(v => {
+                        let arr = [];
+                        if (Array.isArray(v.cartones)) {
+                            arr = v.cartones;
+                        } else if (typeof v.cartones === 'string') {
+                            arr = v.cartones.replace(/[\[\]]/g, '').split(/[\s,;]+/).filter(Boolean);
+                        }
+                        arr.forEach(n => {
+                            const num = parseInt(n, 10);
+                            if (!isNaN(num)) cartonesVendidosGlobal.add(num);
+                        });
+                    });
+
+                    // Actualizar la interfaz
+                    actualizarTotalesGlobales();
+                    actualizarFiltroVendedoresOptions();
+                    aplicarFiltros();
+
+                    if (dbVentas.length > 0) {
+                        mostrarUltimaVenta(dbVentas[dbVentas.length - 1]);
+                    }
+                }
+            } catch (err) {
+                console.warn("No se pudieron obtener los datos históricos de Google Sheets:", err);
+            }
+        }
+
+        function switchTab(tab) {
+            const secVenta = document.getElementById('sectionVenta');
+            const secConsultas = document.getElementById('sectionConsultas');
+            const btnVenta = document.getElementById('btnTabVenta');
+            const btnConsultas = document.getElementById('btnTabConsultas');
+
+            if (tab === 'venta') {
+                secVenta.classList.remove('hidden');
+                secConsultas.classList.add('hidden');
+                btnVenta.className = "px-4 py-2 rounded-xl text-sm font-semibold transition bg-indigo-600 text-white shadow-lg shadow-indigo-600/30";
+                btnConsultas.className = "px-4 py-2 rounded-xl text-sm font-semibold transition bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700";
+            } else {
+                secVenta.classList.add('hidden');
+                secConsultas.classList.remove('hidden');
+                btnConsultas.className = "px-4 py-2 rounded-xl text-sm font-semibold transition bg-indigo-600 text-white shadow-lg shadow-indigo-600/30";
+                btnVenta.className = "px-4 py-2 rounded-xl text-sm font-semibold transition bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700";
+                actualizarFiltroVendedoresOptions();
+                aplicarFiltros();
+            }
+        }
+
+        function setModoCartones(modo) {
+            modoIngresoCartones = modo;
+            const btnRango = document.getElementById('btnModoRango');
+            const btnManual = document.getElementById('btnModoManual');
+            const inputRango = document.getElementById('inputRangoGroup');
+            const inputManual = document.getElementById('inputManualGroup');
+
+            if (modo === 'rango') {
+                btnRango.className = "px-2.5 py-1 rounded-md font-medium text-white bg-indigo-600 shadow-sm transition";
+                btnManual.className = "px-2.5 py-1 rounded-md font-medium text-slate-400 hover:text-white transition";
+                inputRango.classList.remove('hidden');
+                inputManual.classList.add('hidden');
+            } else {
+                btnManual.className = "px-2.5 py-1 rounded-md font-medium text-white bg-indigo-600 shadow-sm transition";
+                btnRango.className = "px-2.5 py-1 rounded-md font-medium text-slate-400 hover:text-white transition";
+                inputManual.classList.remove('hidden');
+                inputRango.classList.add('hidden');
+            }
+            procesarCartones();
+        }
+
+        function toggleMontoMixto() {
+            const formaPago = document.getElementById('formaPago').value;
+            const container = document.getElementById('mixtoContainer');
+            if (formaPago === 'mixto') {
+                container.classList.remove('hidden');
+                autoCalcularMixto();
+            } else {
+                container.classList.add('hidden');
+            }
+            calcularTotal();
+        }
+
+        function autoCalcularMixto() {
+            const precio = parseFloat(document.getElementById('precioUnitario').value) || 0;
+            const total = cartonesSeleccionados.length * precio;
+            document.getElementById('montoEfectivo').value = total / 2;
+            document.getElementById('montoTransferencia').value = total / 2;
+        }
+
+        function procesarCartones() {
+            cartonesSeleccionados = [];
+
+            if (modoIngresoCartones === 'rango') {
+                const desde = parseInt(document.getElementById('cartonDesde').value, 10);
+                const hasta = parseInt(document.getElementById('cartonHasta').value, 10);
+
+                if (!isNaN(desde) && !isNaN(hasta) && desde > 0 && hasta >= desde) {
+                    for (let i = desde; i <= hasta; i++) {
+                        cartonesSeleccionados.push(i);
+                    }
+                }
+            } else {
+                const rawText = document.getElementById('cartonesLista').value;
+                const tokens = rawText.split(',').map(s => s.trim()).filter(s => s !== '');
+                tokens.forEach(t => {
+                    const num = parseInt(t, 10);
+                    if (!isNaN(num) && num > 0) cartonesSeleccionados.push(num);
+                });
+            }
+
+            validarCartones();
+            calcularTotal();
+        }
+
+        function validarCartones() {
+            const lblCant = document.getElementById('lblCantidadCartones');
+            const lblStatus = document.getElementById('lblValidationStatus');
+
+            lblCant.textContent = cartonesSeleccionados.length;
+
+            if (cartonesSeleccionados.length === 0) {
+                lblStatus.innerHTML = `<span class="text-slate-500"><i class="fa-solid fa-circle-info mr-1"></i> Ingrese números</span>`;
+                cartonesValidos = false;
+                return;
+            }
+
+            // Verificar duplicados internos
+            const unicos = new Set(cartonesSeleccionados);
+            if (unicos.size !== cartonesSeleccionados.length) {
+                lblStatus.innerHTML = `<span class="text-rose-400 font-semibold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Números duplicados en la lista</span>`;
+                cartonesValidos = false;
+                return;
+            }
+
+            // Verificar si ya fueron vendidos previamente (conversión estricta a Number)
+            const repetidosYaVendidos = cartonesSeleccionados.filter(n => cartonesVendidosGlobal.has(Number(n)));
+            if (repetidosYaVendidos.length > 0) {
+                const muestraRepetidos = repetidosYaVendidos.length > 4 
+                    ? `${repetidosYaVendidos.slice(0, 4).join(', #')}... (${repetidosYaVendidos.length} ya vendidos)`
+                    : repetidosYaVendidos.join(', #');
+                lblStatus.innerHTML = `<span class="text-rose-400 font-semibold"><i class="fa-solid fa-ban mr-1"></i> Cartón #${muestraRepetidos} YA REGISTRADO</span>`;
+                cartonesValidos = false;
+                return;
+            }
+
+            lblStatus.innerHTML = `<span class="text-emerald-400 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> Disponibles</span>`;
+            cartonesValidos = true;
+        }
+
+        function calcularTotal() {
+            const precio = parseFloat(document.getElementById('precioUnitario').value) || 0;
+            const cant = cartonesSeleccionados.length;
+            const total = cant * precio;
+
+            document.getElementById('lblDetalleTotal').textContent = `${cant} cartón/es × $${precio.toLocaleString('es-AR')}`;
+            document.getElementById('previewTotal').textContent = `$${total.toLocaleString('es-AR')}`;
+
+            const formaPago = document.getElementById('formaPago').value;
+            const mixtoError = document.getElementById('mixtoError');
+            if (formaPago === 'mixto') {
+                const efec = parseFloat(document.getElementById('montoEfectivo').value) || 0;
+                const transf = parseFloat(document.getElementById('montoTransferencia').value) || 0;
+                if (Math.abs((efec + transf) - total) > 0.01) {
+                    mixtoError.classList.remove('hidden');
+                } else {
+                    mixtoError.classList.add('hidden');
+                }
+            }
+        }
+
+        document.getElementById('cartonDesde').addEventListener('input', procesarCartones);
+        document.getElementById('cartonHasta').addEventListener('input', procesarCartones);
+        document.getElementById('cartonesLista').addEventListener('input', procesarCartones);
+        document.getElementById('precioUnitario').addEventListener('input', calcularTotal);
+        document.getElementById('montoEfectivo').addEventListener('input', calcularTotal);
+        document.getElementById('montoTransferencia').addEventListener('input', calcularTotal);
+
+        document.getElementById('bingoForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            if (!cartonesValidos) {
+                alert("Por favor corrija la lista de cartones. No pueden ser 0, ni estar duplicados o ya vendidos.");
+                return;
+            }
+
+            const formaPago = document.getElementById('formaPago').value;
+            const precioUnitario = parseFloat(document.getElementById('precioUnitario').value) || 0;
+            const totalVenta = cartonesSeleccionados.length * precioUnitario;
+
+            let montoEfectivo = 0;
+            let montoTransferencia = 0;
+
+            if (formaPago === 'efectivo') {
+                montoEfectivo = totalVenta;
+            } else if (formaPago === 'transferencia') {
+                montoTransferencia = totalVenta;
+            } else {
+                montoEfectivo = parseFloat(document.getElementById('montoEfectivo').value) || 0;
+                montoTransferencia = parseFloat(document.getElementById('montoTransferencia').value) || 0;
+
+                if (Math.abs((montoEfectivo + montoTransferencia) - totalVenta) > 0.01) {
+                    alert("Error: En el pago mixto, la suma de Efectivo y Transferencia debe ser exactamente igual al Total.");
+                    return;
+                }
+            }
+
+            const payload = {
+                fecha: new Date().toLocaleString('es-AR'),
+                vendedor: document.getElementById('vendedor').value.trim(),
+                comprador: document.getElementById('comprador').value.trim(),
+                cartones: [...cartonesSeleccionados].sort((a, b) => a - b),
+                cantidad: cartonesSeleccionados.length,
+                precioUnitario: precioUnitario,
+                formaPago: formaPago,
+                montoEfectivo: montoEfectivo,
+                montoTransferencia: montoTransferencia,
+                total: totalVenta
+            };
+
+            const btnSubmit = document.getElementById('btnSubmit');
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Registrando...</span>`;
+
+            if (SCRIPT_URL && SCRIPT_URL.trim() !== 'https://script.google.com/macros/s/AKfycbxoG4lMnl56eXJ7hUuQoFx0B2559F6VrIr483QjAGmhkbuT-xyAPvHzG39bUfycdXA/exec') {
+                try {
+                    await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'text/plain'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                } catch (err) {
+                    console.warn("No se pudo conectar con Apps Script. Guardado localmente.", err);
+                }
+            }
+
+            dbVentas.push(payload);
+            payload.cartones.forEach(n => cartonesVendidosGlobal.add(Number(n)));
+
+            mostrarUltimaVenta(payload);
+            actualizarTotalesGlobales();
+
+            document.getElementById('comprador').value = '';
+            document.getElementById('cartonDesde').value = '';
+            document.getElementById('cartonHasta').value = '';
+            document.getElementById('cartonesLista').value = '';
+            procesarCartones();
+
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = `<i class="fa-solid fa-check-circle"></i> <span>Confirmar y Registrar Venta</span>`;
+        });
+
+        function mostrarUltimaVenta(v) {
+            const card = document.getElementById('lastSaleCard');
+            const details = document.getElementById('lastSaleDetails');
+            card.classList.remove('hidden');
+
+            details.innerHTML = `
+        <p><strong>Comprador:</strong> ${v.comprador || '-'}</p>
+        <p><strong>Vendedor:</strong> ${v.vendedor}</p>
+        <p><strong>Cartones (#${v.cantidad}):</strong> [ #${v.cartones.join(', #')} ]</p>
+        <p><strong>Forma Pago:</strong> <span class="uppercase text-amber-400">${v.formaPago}</span></p>
+        <p><strong>Total:</strong> <span class="text-emerald-400 font-bold">$${v.total.toLocaleString('es-AR')}</span></p>
+      `;
+        }
+
+        function actualizarTotalesGlobales() {
+            let totalRecaudado = 0, totalCartones = 0, totalEfec = 0, totalTransf = 0;
+
+            dbVentas.forEach(v => {
+                totalRecaudado += v.total;
+                totalCartones += v.cantidad;
+                totalEfec += v.montoEfectivo;
+                totalTransf += v.montoTransferencia;
+            });
+
+            const pozoSorteo = totalRecaudado * 0.20;
+
+            document.getElementById('boxTotalRecaudado').textContent = `$${totalRecaudado.toLocaleString('es-AR')}`;
+            document.getElementById('boxPozoSorteo').textContent = `$${pozoSorteo.toLocaleString('es-AR')}`;
+            document.getElementById('boxTotalCartones').textContent = totalCartones;
+            document.getElementById('boxTotalEfectivo').textContent = `$${totalEfec.toLocaleString('es-AR')}`;
+            document.getElementById('boxTotalTransf').textContent = `$${totalTransf.toLocaleString('es-AR')}`;
+        }
+
+        function actualizarFiltroVendedoresOptions() {
+            const select = document.getElementById('filtroVendedor');
+            const vendedores = [...new Set(dbVentas.map(v => v.vendedor))];
+
+            select.innerHTML = '<option value="todos">Todos los Vendedores</option>';
+            vendedores.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v;
+                opt.textContent = v;
+                select.appendChild(opt);
+            });
+        }
+
+        function aplicarFiltros() {
+            const fVend = document.getElementById('filtroVendedor').value;
+            const fMetodo = document.getElementById('filtroMetodo').value;
+            const tbody = document.getElementById('tablaVentasBody');
+
+            const filtradas = dbVentas.filter(v => {
+                const matchVend = (fVend === 'todos' || v.vendedor === fVend);
+                const matchMet = (fMetodo === 'todos' || v.formaPago === fMetodo);
+                return matchVend && matchMet;
+            });
+
+            let totalM = 0, totalC = 0, totalE = 0, totalT = 0;
+            tbody.innerHTML = '';
+
+            filtradas.forEach(v => {
+                totalM += v.total;
+                totalC += v.cantidad;
+                totalE += v.montoEfectivo;
+                totalT += v.montoTransferencia;
+
+                const row = document.createElement('tr');
+                row.className = "hover:bg-slate-800/40 transition border-b border-slate-800/40";
+                row.innerHTML = `
+          <td class="p-3 text-slate-400">${v.fecha}</td>
+          <td class="p-3 font-semibold text-slate-200">${v.vendedor}</td>
+          <td class="p-3 text-slate-300">${v.comprador || '-'}</td>
+          <td class="p-3 font-mono text-indigo-300">
+            ${Array.isArray(v.cartones) && v.cartones.length > 0 ? '#' + v.cartones.join(', #') : '-'}
+          </td>
+          <td class="p-3">
+            <span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold ${v.formaPago === 'efectivo' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
+                        v.formaPago === 'transferencia' ? 'bg-sky-500/20 text-sky-400 border border-sky-500/30' :
+                            'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                    }">
+              ${v.formaPago}
+            </span>
+          </td>
+          <td class="p-3 text-right font-bold text-emerald-400">$${v.total.toLocaleString('es-AR')}</td>
+        `;
+                tbody.appendChild(row);
+            });
+
+            const totalPozo = totalM * 0.20;
+
+            document.getElementById('fTotalMonto').textContent = `$${totalM.toLocaleString('es-AR')}`;
+            document.getElementById('fTotalPozo').textContent = `$${totalPozo.toLocaleString('es-AR')}`;
+            document.getElementById('fTotalCartones').textContent = totalC;
+            document.getElementById('fTotalEfec').textContent = `$${totalE.toLocaleString('es-AR')}`;
+            document.getElementById('fTotalTransf').textContent = `$${totalT.toLocaleString('es-AR')}`;
+        }
+    </script>
+</body>
+
+</html>
