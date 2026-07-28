@@ -7,6 +7,7 @@
     <title>Sistema de Gestión de Ventas - Bingo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
 <body class="bg-slate-950 text-slate-100 min-h-screen p-3 md:p-6 font-sans">
@@ -15,8 +16,7 @@
     <div class="max-w-6xl mx-auto space-y-6">
 
         <!-- Header / Navbar -->
-        <header
-            class="bg-slate-900 border border-slate-800 rounded-2xl p-4 md:p-6 shadow-xl flex flex-col md:flex-row justify-between items-center gap-4">
+        <header class="bg-slate-900 border border-slate-800 rounded-2xl p-4 md:p-6 shadow-xl flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
                 <div class="p-3 bg-indigo-600/20 text-indigo-400 rounded-xl border border-indigo-500/30">
                     <i class="fa-solid fa-ticket text-2xl"></i>
@@ -27,12 +27,10 @@
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <button id="btnTabVenta" onclick="switchTab('venta')"
-                    class="px-4 py-2 rounded-xl text-sm font-semibold transition bg-indigo-600 text-white shadow-lg shadow-indigo-600/30">
+                <button id="btnTabVenta" onclick="switchTab('venta')" class="px-4 py-2 rounded-xl text-sm font-semibold transition bg-indigo-600 text-white shadow-lg shadow-indigo-600/30">
                     <i class="fa-solid fa-cart-plus mr-1.5"></i> Nueva Venta
                 </button>
-                <button id="btnTabConsultas" onclick="switchTab('consultas')"
-                    class="px-4 py-2 rounded-xl text-sm font-semibold transition bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700">
+                <button id="btnTabConsultas" onclick="switchTab('consultas')" class="px-4 py-2 rounded-xl text-sm font-semibold transition bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700">
                     <i class="fa-solid fa-chart-pie mr-1.5"></i> Reportes y Filtros
                 </button>
             </div>
@@ -48,71 +46,41 @@
                 </h2>
 
                 <form id="bingoForm" class="space-y-4">
-
-                    <!-- Vendedor y Comprador -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label
-                                class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Vendedor
-                                *</label>
-                            <input type="text" id="vendedor" required placeholder="Ej: Juan Pérez"
-                                class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none transition text-sm text-white placeholder-slate-600">
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Vendedor *</label>
+                            <input type="text" id="vendedor" required placeholder="Ej: Juan Pérez" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none transition text-sm text-white placeholder-slate-600">
                         </div>
                         <div>
-                            <label
-                                class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Comprador
-                                <span class="text-slate-500 font-normal lowercase">(opcional)</span></label>
-                            <input type="text" id="comprador" placeholder="Ej: Maria Gómez"
-                                class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none transition text-sm text-white placeholder-slate-600">
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Comprador <span class="text-slate-500 font-normal lowercase">(opcional)</span></label>
+                            <input type="text" id="comprador" placeholder="Ej: Maria Gómez" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none transition text-sm text-white placeholder-slate-600">
                         </div>
                     </div>
 
-                    <!-- Cantidad de Cartones / Billetes -->
                     <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800/80 space-y-3">
-                        <label class="block text-xs font-semibold text-indigo-400 uppercase tracking-wider">
-                            Cantidad de Cartones / Billetes Vendidos *
-                        </label>
+                        <label class="block text-xs font-semibold text-indigo-400 uppercase tracking-wider">Cantidad de Cartones / Billetes Vendidos *</label>
                         <div class="flex items-center gap-3">
-                            <button type="button" onclick="adjustCantidad(-1)"
-                                class="w-11 h-11 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-bold text-xl flex items-center justify-center transition border border-slate-700 shadow-sm">
-                                -
-                            </button>
-                            <input type="number" id="cantidadCartones" min="1" value="1" required
-                                class="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-center font-mono font-bold text-xl text-white placeholder-slate-600">
-                            <button type="button" onclick="adjustCantidad(1)"
-                                class="w-11 h-11 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-bold text-xl flex items-center justify-center transition border border-slate-700 shadow-sm">
-                                +
-                            </button>
+                            <button type="button" onclick="adjustCantidad(-1)" class="w-11 h-11 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-bold text-xl flex items-center justify-center transition border border-slate-700 shadow-sm">-</button>
+                            <input type="number" id="cantidadCartones" min="1" value="1" required class="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-center font-mono font-bold text-xl text-white placeholder-slate-600">
+                            <button type="button" onclick="adjustCantidad(1)" class="w-11 h-11 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-bold text-xl flex items-center justify-center transition border border-slate-700 shadow-sm">+</button>
                         </div>
                         <div class="flex flex-wrap items-center gap-2 pt-1">
                             <span class="text-[11px] text-slate-500 font-medium mr-1">Rápido:</span>
-                            <button type="button" onclick="setCantidad(1)"
-                                class="px-3 py-1 bg-slate-900 hover:bg-indigo-950/60 border border-slate-800 hover:border-indigo-500/50 rounded-lg text-xs font-semibold text-indigo-300 transition">1</button>
-                            <button type="button" onclick="setCantidad(5)"
-                                class="px-3 py-1 bg-slate-900 hover:bg-indigo-950/60 border border-slate-800 hover:border-indigo-500/50 rounded-lg text-xs font-semibold text-indigo-300 transition">+5</button>
-                            <button type="button" onclick="setCantidad(10)"
-                                class="px-3 py-1 bg-slate-900 hover:bg-indigo-950/60 border border-slate-800 hover:border-indigo-500/50 rounded-lg text-xs font-semibold text-indigo-300 transition">+10</button>
-                            <button type="button" onclick="setCantidad(20)"
-                                class="px-3 py-1 bg-slate-900 hover:bg-indigo-950/60 border border-slate-800 hover:border-indigo-500/50 rounded-lg text-xs font-semibold text-indigo-300 transition">+20</button>
+                            <button type="button" onclick="setCantidad(1)" class="px-3 py-1 bg-slate-900 hover:bg-indigo-950/60 border border-slate-800 hover:border-indigo-500/50 rounded-lg text-xs font-semibold text-indigo-300 transition">1</button>
+                            <button type="button" onclick="setCantidad(5)" class="px-3 py-1 bg-slate-900 hover:bg-indigo-950/60 border border-slate-800 hover:border-indigo-500/50 rounded-lg text-xs font-semibold text-indigo-300 transition">+5</button>
+                            <button type="button" onclick="setCantidad(10)" class="px-3 py-1 bg-slate-900 hover:bg-indigo-950/60 border border-slate-800 hover:border-indigo-500/50 rounded-lg text-xs font-semibold text-indigo-300 transition">+10</button>
+                            <button type="button" onclick="setCantidad(20)" class="px-3 py-1 bg-slate-900 hover:bg-indigo-950/60 border border-slate-800 hover:border-indigo-500/50 rounded-lg text-xs font-semibold text-indigo-300 transition">+20</button>
                         </div>
                     </div>
 
-                    <!-- Precio Unitario y Métodos de Pago -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label
-                                class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Precio
-                                Unitario ($)</label>
-                            <input type="number" id="precioUnitario" value="1000" min="0" required
-                                class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold text-emerald-400 text-base">
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Precio Unitario ($)</label>
+                            <input type="number" id="precioUnitario" value="1000" min="0" required class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold text-emerald-400 text-base">
                         </div>
-
                         <div>
-                            <label
-                                class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Forma
-                                de Pago</label>
-                            <select id="formaPago" onchange="toggleMontoMixto()"
-                                class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm text-white">
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Forma de Pago</label>
+                            <select id="formaPago" onchange="toggleMontoMixto()" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm text-white">
                                 <option value="efectivo">Efectivo (100%)</option>
                                 <option value="transferencia">Transferencia (100%)</option>
                                 <option value="mixto">Mixto (Efectivo + Transferencia)</option>
@@ -120,66 +88,47 @@
                         </div>
                     </div>
 
-                    <!-- Desglose de Pago Mixto -->
-                    <div id="mixtoContainer"
-                        class="hidden bg-slate-950/60 p-4 rounded-xl border border-amber-500/30 space-y-3">
-                        <label class="block text-xs font-semibold text-amber-400 uppercase tracking-wider">Desglose de
-                            Pago Mixto</label>
+                    <div id="mixtoContainer" class="hidden bg-slate-950/60 p-4 rounded-xl border border-amber-500/30 space-y-3">
+                        <label class="block text-xs font-semibold text-amber-400 uppercase tracking-wider">Desglose de Pago Mixto</label>
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-[11px] font-medium text-slate-400 mb-1">Monto Efectivo
-                                    ($)</label>
-                                <input type="number" id="montoEfectivo" min="0" value="0"
-                                    class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none text-emerald-400 font-bold">
+                                <label class="block text-[11px] font-medium text-slate-400 mb-1">Monto Efectivo ($)</label>
+                                <input type="number" id="montoEfectivo" min="0" value="0" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none text-emerald-400 font-bold">
                             </div>
                             <div>
-                                <label class="block text-[11px] font-medium text-slate-400 mb-1">Monto Transferencia
-                                    ($)</label>
-                                <input type="number" id="montoTransferencia" min="0" value="0"
-                                    class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none text-sky-400 font-bold">
+                                <label class="block text-[11px] font-medium text-slate-400 mb-1">Monto Transferencia ($)</label>
+                                <input type="number" id="montoTransferencia" min="0" value="0" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none text-sky-400 font-bold">
                             </div>
                         </div>
-                        <p id="mixtoError" class="text-[11px] text-rose-400 hidden font-medium">⚠️ La suma de efectivo y
-                            transferencia debe coincidir exactamente con el total.</p>
+                        <p id="mixtoError" class="text-[11px] text-rose-400 hidden font-medium">⚠️ La suma de efectivo y transferencia debe coincidir exactamente con el total.</p>
                     </div>
 
-                    <!-- Resumen Total y Botón de Cobro -->
                     <div class="pt-2">
-                        <div
-                            class="bg-indigo-950/40 p-4 rounded-xl border border-indigo-500/30 flex justify-between items-center mb-4">
+                        <div class="bg-indigo-950/40 p-4 rounded-xl border border-indigo-500/30 flex justify-between items-center mb-4">
                             <div>
-                                <span class="text-xs uppercase font-semibold text-indigo-300 block">Total A
-                                    Cobrar</span>
+                                <span class="text-xs uppercase font-semibold text-indigo-300 block">Total A Cobrar</span>
                                 <span class="text-xs text-slate-400" id="lblDetalleTotal">0 cartones × $1,000</span>
                             </div>
                             <span id="previewTotal" class="text-3xl font-extrabold text-emerald-400">$0</span>
                         </div>
-
-                        <button type="submit" id="btnSubmit"
-                            class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 active:scale-[0.99] transition-all font-bold text-slate-950 rounded-xl shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2 text-base">
+                        <button type="submit" id="btnSubmit" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 active:scale-[0.99] transition-all font-bold text-slate-950 rounded-xl shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2 text-base">
                             <i class="fa-solid fa-check-circle"></i>
                             <span>Confirmar y Registrar Venta</span>
                         </button>
                     </div>
-
                 </form>
             </div>
 
             <!-- Columna Derecha: Tarjeta de Balance & Confirmación -->
             <div class="lg:col-span-5 space-y-6">
-
-                <!-- Totales Rápidos del Evento -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
                     <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
-                        <span class="flex items-center">
-                            <i class="fa-solid fa-vault text-amber-400 mr-2"></i> Balance del Bingo
-                        </span>
+                        <span class="flex items-center"><i class="fa-solid fa-vault text-amber-400 mr-2"></i> Balance del Bingo</span>
                         <span class="text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                             <i class="fa-solid fa-percent text-[9px]"></i> Pozo 20%
                         </span>
                     </h3>
 
-                    <!-- Caja Destacada: Pozo del Sorteo (20%) -->
                     <div class="bg-gradient-to-r from-amber-950/40 via-amber-900/20 to-slate-950 p-4 rounded-xl border border-amber-500/30 shadow-lg relative overflow-hidden">
                         <div class="flex justify-between items-center relative z-10">
                             <div>
@@ -203,69 +152,62 @@
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-3 text-xs">
-                        <div
-                            class="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800 flex justify-between items-center">
-                            <span class="text-slate-400"><i class="fa-solid fa-money-bill text-emerald-400 mr-1"></i>
-                                Efec:</span>
+                        <div class="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800 flex justify-between items-center">
+                            <span class="text-slate-400"><i class="fa-solid fa-money-bill text-emerald-400 mr-1"></i> Efec:</span>
                             <strong id="boxTotalEfectivo" class="text-slate-200">$0</strong>
                         </div>
-                        <div
-                            class="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800 flex justify-between items-center">
-                            <span class="text-slate-400"><i
-                                    class="fa-solid fa-mobile-screen-button text-sky-400 mr-1"></i> Transf:</span>
+                        <div class="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800 flex justify-between items-center">
+                            <span class="text-slate-400"><i class="fa-solid fa-mobile-screen-button text-sky-400 mr-1"></i> Transf:</span>
                             <strong id="boxTotalTransf" class="text-slate-200">$0</strong>
                         </div>
                     </div>
                 </div>
 
-                <!-- Confirmación de última venta -->
-                <div id="lastSaleCard"
-                    class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3 hidden">
+                <div id="lastSaleCard" class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3 hidden">
                     <div class="flex items-center space-x-2 text-emerald-400 font-bold text-sm">
                         <i class="fa-solid fa-circle-check text-lg"></i>
                         <span>¡Venta registrada con éxito!</span>
                     </div>
-                    <div id="lastSaleDetails"
-                        class="text-xs text-slate-300 bg-slate-950 p-3.5 rounded-xl space-y-2 border border-slate-800 font-mono">
-                        <!-- Contenido dinámico -->
-                    </div>
+                    <div id="lastSaleDetails" class="text-xs text-slate-300 bg-slate-950 p-3.5 rounded-xl space-y-2 border border-slate-800 font-mono"></div>
                 </div>
-
             </div>
-
         </div>
 
         <!-- SECCIÓN 2: REPORTES Y FILTRADO POR VENDEDORES -->
-        <div id="sectionConsultas"
-            class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-5 md:p-6 shadow-xl space-y-6">
+        <div id="sectionConsultas" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-5 md:p-6 shadow-xl space-y-6">
 
-            <div
-                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800 pb-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800 pb-4">
                 <div>
                     <h2 class="text-lg font-bold text-slate-100 flex items-center">
                         <i class="fa-solid fa-filter text-indigo-400 mr-2"></i> Reportes y Consulta por Vendedor
                     </h2>
-                    <p class="text-xs text-slate-400">Filtra las ventas realizadas y analiza el rendimiento individual.
-                    </p>
+                    <p class="text-xs text-slate-400">Filtra, exporta o resetea el historial de jugadas.</p>
                 </div>
 
-                <!-- Filtros -->
-                <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                    <select id="filtroVendedor" onchange="aplicarFiltros()"
-                        class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-indigo-500">
+                <!-- Filtros y Botones Globales (Excel & Borrado) -->
+                <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+                    <select id="filtroVendedor" onchange="aplicarFiltros()" class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-indigo-500">
                         <option value="todos">Todos los Vendedores</option>
                     </select>
-                    <select id="filtroMetodo" onchange="aplicarFiltros()"
-                        class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-indigo-500">
+                    <select id="filtroMetodo" onchange="aplicarFiltros()" class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-indigo-500">
                         <option value="todos">Todos los Métodos de Pago</option>
                         <option value="efectivo">Efectivo</option>
                         <option value="transferencia">Transferencia</option>
                         <option value="mixto">Mixto</option>
                     </select>
+
+                    <button onclick="descargarExcel()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 transition shadow-lg shadow-emerald-600/20" title="Descargar ventas filtradas en CSV/Excel">
+                        <i class="fa-solid fa-file-excel text-sm"></i>
+                        <span>Excel</span>
+                    </button>
+
+                    <button onclick="borradoTotal()" class="px-3.5 py-2 bg-rose-600/20 hover:bg-rose-600 hover:text-white border border-rose-500/40 text-rose-300 font-bold rounded-xl text-xs flex items-center gap-1.5 transition active:scale-95" title="Vaciar base de datos para la siguiente jugada">
+                        <i class="fa-solid fa-trash-arrow-up text-sm"></i>
+                        <span>Borrado Total</span>
+                    </button>
                 </div>
             </div>
 
-            <!-- Tarjetas Resumen del Filtro -->
             <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
                 <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
                     <span class="text-[11px] text-slate-400 block mb-1">Ventas Filtradas</span>
@@ -302,11 +244,10 @@
                             <th class="p-3">Cartones Vendidos</th>
                             <th class="p-3">Forma Pago</th>
                             <th class="p-3 text-right">Total ($)</th>
+                            <th class="p-3 text-center">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="tablaVentasBody" class="divide-y divide-slate-800/60 bg-slate-900/50">
-                        <!-- Filas dinámicas -->
-                    </tbody>
+                    <tbody id="tablaVentasBody" class="divide-y divide-slate-800/60 bg-slate-900/50"></tbody>
                 </table>
             </div>
 
@@ -314,12 +255,58 @@
 
     </div>
 
+    <!-- MODAL PARA EDITAR REGISTRO -->
+    <div id="editModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white flex items-center">
+                    <i class="fa-solid fa-pen-to-square text-indigo-400 mr-2"></i> Editar Registro
+                </h3>
+                <button onclick="cerrarModalEditar()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <form id="editForm" class="space-y-3">
+                <input type="hidden" id="editRowIndex">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Vendedor</label>
+                    <input type="text" id="editVendedor" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Comprador</label>
+                    <input type="text" id="editComprador" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Cant. Cartones</label>
+                        <input type="number" id="editCantidad" min="1" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-white font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Forma Pago</label>
+                        <select id="editFormaPago" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-white">
+                            <option value="efectivo">Efectivo</option>
+                            <option value="transferencia">Transferencia</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Total ($)</label>
+                    <input type="number" id="editTotal" min="0" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm font-bold text-emerald-400">
+                </div>
+
+                <div class="pt-2 flex gap-3">
+                    <button type="button" onclick="cerrarModalEditar()" class="w-1/2 py-2.5 bg-slate-800 hover:bg-slate-700 font-semibold text-slate-300 rounded-xl text-xs">Cancelar</button>
+                    <button type="submit" id="btnGuardarEdit" class="w-1/2 py-2.5 bg-indigo-600 hover:bg-indigo-500 font-bold text-white rounded-xl text-xs shadow-lg shadow-indigo-600/30">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbykZajZB-FLx-oP8yDE0wCTpt5hvpyYNMKkUg9_UYiJvfPrcoUj8Qh9DJSfCpXbeZ5C/exec';
 
         let dbVentas = [];
+        let ventasFiltradasActuales = [];
 
-        // Cargar ventas históricas desde Google Sheets apenas inicia la aplicación
         document.addEventListener('DOMContentLoaded', () => {
             cargarVentasHistorial();
         });
@@ -335,14 +322,7 @@
                     dbVentas = data.ventas.map(v => {
                         let cant = parseInt(v.cantidad, 10);
                         if (isNaN(cant) || cant <= 0) {
-                            if (Array.isArray(v.cartones)) {
-                                cant = v.cartones.length;
-                            } else if (typeof v.cartones === 'string') {
-                                const arr = v.cartones.replace(/[\[\]]/g, '').split(/[\s,;]+/).filter(Boolean);
-                                cant = arr.length;
-                            } else {
-                                cant = 1;
-                            }
+                            cant = 1;
                         }
                         return {
                             ...v,
@@ -353,13 +333,14 @@
                         };
                     });
 
-                    // Actualizar la interfaz
                     actualizarTotalesGlobales();
                     actualizarFiltroVendedoresOptions();
                     aplicarFiltros();
 
                     if (dbVentas.length > 0) {
                         mostrarUltimaVenta(dbVentas[dbVentas.length - 1]);
+                    } else {
+                        document.getElementById('lastSaleCard').classList.add('hidden');
                     }
                 }
             } catch (err) {
@@ -393,18 +374,14 @@
             let val = parseInt(input.value, 10) || 0;
             val = Math.max(1, val + delta);
             input.value = val;
-            if (document.getElementById('formaPago').value === 'mixto') {
-                autoCalcularMixto();
-            }
+            if (document.getElementById('formaPago').value === 'mixto') autoCalcularMixto();
             calcularTotal();
         }
 
         function setCantidad(cant) {
             const input = document.getElementById('cantidadCartones');
             input.value = Math.max(1, cant);
-            if (document.getElementById('formaPago').value === 'mixto') {
-                autoCalcularMixto();
-            }
+            if (document.getElementById('formaPago').value === 'mixto') autoCalcularMixto();
             calcularTotal();
         }
 
@@ -450,15 +427,11 @@
         }
 
         document.getElementById('cantidadCartones').addEventListener('input', () => {
-            if (document.getElementById('formaPago').value === 'mixto') {
-                autoCalcularMixto();
-            }
+            if (document.getElementById('formaPago').value === 'mixto') autoCalcularMixto();
             calcularTotal();
         });
         document.getElementById('precioUnitario').addEventListener('input', () => {
-            if (document.getElementById('formaPago').value === 'mixto') {
-                autoCalcularMixto();
-            }
+            if (document.getElementById('formaPago').value === 'mixto') autoCalcularMixto();
             calcularTotal();
         });
         document.getElementById('montoEfectivo').addEventListener('input', calcularTotal);
@@ -515,30 +488,27 @@
                     await fetch(SCRIPT_URL, {
                         method: 'POST',
                         mode: 'no-cors',
-                        headers: {
-                            'Content-Type': 'text/plain'
-                        },
+                        headers: { 'Content-Type': 'text/plain' },
                         body: JSON.stringify(payload)
                     });
                 } catch (err) {
-                    console.warn("No se pudo conectar con Apps Script. Guardado localmente.", err);
+                    console.warn("Error enviando datos:", err);
                 }
             }
 
             dbVentas.push(payload);
-
             mostrarUltimaVenta(payload);
             actualizarTotalesGlobales();
 
             document.getElementById('comprador').value = '';
             document.getElementById('cantidadCartones').value = '1';
-            if (document.getElementById('formaPago').value === 'mixto') {
-                autoCalcularMixto();
-            }
+            if (document.getElementById('formaPago').value === 'mixto') autoCalcularMixto();
             calcularTotal();
 
             btnSubmit.disabled = false;
             btnSubmit.innerHTML = `<i class="fa-solid fa-check-circle"></i> <span>Confirmar y Registrar Venta</span>`;
+            
+            setTimeout(cargarVentasHistorial, 1500);
         });
 
         function mostrarUltimaVenta(v) {
@@ -546,14 +516,13 @@
             const details = document.getElementById('lastSaleDetails');
             card.classList.remove('hidden');
 
-            const cant = v.cantidad || (Array.isArray(v.cartones) ? v.cartones.length : 0);
+            const cant = v.cantidad || 0;
 
             details.innerHTML = `
                 <p><strong>Comprador:</strong> ${v.comprador || '-'}</p>
                 <p><strong>Vendedor:</strong> ${v.vendedor}</p>
                 <p><strong>Cantidad de Cartones:</strong> <span class="text-indigo-400 font-bold">${cant} cartón/es</span></p>
                 <p><strong>Forma Pago:</strong> <span class="uppercase text-amber-400">${v.formaPago}</span></p>
-                <p><strong>Efectivo:</strong> <span class="text-emerald-400">$${(v.montoEfectivo || 0).toLocaleString('es-AR')}</span> | <strong>Transf:</strong> <span class="text-sky-400">$${(v.montoTransferencia || 0).toLocaleString('es-AR')}</span></p>
                 <p><strong>Total:</strong> <span class="text-emerald-400 font-bold">$${(v.total || 0).toLocaleString('es-AR')}</span></p>
             `;
         }
@@ -563,8 +532,7 @@
 
             dbVentas.forEach(v => {
                 totalRecaudado += (v.total || 0);
-                const cant = v.cantidad || (Array.isArray(v.cartones) ? v.cartones.length : 0);
-                totalCartones += cant;
+                totalCartones += (v.cantidad || 0);
                 totalEfec += (v.montoEfectivo || 0);
                 totalTransf += (v.montoTransferencia || 0);
             });
@@ -596,7 +564,7 @@
             const fMetodo = document.getElementById('filtroMetodo').value;
             const tbody = document.getElementById('tablaVentasBody');
 
-            const filtradas = dbVentas.filter(v => {
+            ventasFiltradasActuales = dbVentas.filter(v => {
                 const matchVend = (fVend === 'todos' || v.vendedor === fVend);
                 const matchMet = (fMetodo === 'todos' || v.formaPago === fMetodo);
                 return matchVend && matchMet;
@@ -605,10 +573,9 @@
             let totalM = 0, totalC = 0, totalE = 0, totalT = 0;
             tbody.innerHTML = '';
 
-            filtradas.forEach(v => {
+            ventasFiltradasActuales.forEach((v) => {
                 totalM += (v.total || 0);
-                const cant = v.cantidad || (Array.isArray(v.cartones) ? v.cartones.length : 0);
-                totalC += cant;
+                totalC += (v.cantidad || 0);
                 totalE += (v.montoEfectivo || 0);
                 totalT += (v.montoTransferencia || 0);
 
@@ -618,7 +585,7 @@
                     <td class="p-3 text-slate-400">${v.fecha}</td>
                     <td class="p-3 font-semibold text-slate-200">${v.vendedor}</td>
                     <td class="p-3 text-slate-300">${v.comprador || '-'}</td>
-                    <td class="p-3 font-mono text-indigo-300 font-bold">${cant} cartón/es</td>
+                    <td class="p-3 font-mono text-indigo-300 font-bold">${v.cantidad} cartón/es</td>
                     <td class="p-3">
                         <span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold ${v.formaPago === 'efectivo' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
                                     v.formaPago === 'transferencia' ? 'bg-sky-500/20 text-sky-400 border border-sky-500/30' :
@@ -628,6 +595,16 @@
                         </span>
                     </td>
                     <td class="p-3 text-right font-bold text-emerald-400">$${(v.total || 0).toLocaleString('es-AR')}</td>
+                    <td class="p-3 text-center">
+                        <div class="flex items-center justify-center space-x-2">
+                            <button onclick="abrirModalEditar(${v.rowIndex})" class="p-1.5 text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/20 rounded-lg transition" title="Editar">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="borrarRegistro(${v.rowIndex})" class="p-1.5 text-rose-400 hover:text-rose-300 hover:bg-rose-500/20 rounded-lg transition" title="Borrar">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </td>
                 `;
                 tbody.appendChild(row);
             });
@@ -640,6 +617,178 @@
             document.getElementById('fTotalEfec').textContent = `$${totalE.toLocaleString('es-AR')}`;
             document.getElementById('fTotalTransf').textContent = `$${totalT.toLocaleString('es-AR')}`;
         }
+
+        // --- DESCARGAR ARCHIVO EXCEL (.XLSX) NATIVO ---
+        function descargarExcel() {
+            if (ventasFiltradasActuales.length === 0) {
+                alert("No hay registros disponibles para exportar con los filtros aplicados.");
+                return;
+            }
+
+            // 1. Mapear los datos filtrados a un formato con encabezados limpios
+            const datosExportar = ventasFiltradasActuales.map(v => ({
+                "Fecha / Hora": v.fecha || "",
+                "Vendedor": v.vendedor || "",
+                "Comprador": v.comprador || "-",
+                "Cantidad Cartones": v.cantidad || 0,
+                "Forma de Pago": v.formaPago ? v.formaPago.toUpperCase() : "",
+                "Monto Efectivo ($)": v.montoEfectivo || 0,
+                "Monto Transferencia ($)": v.montoTransferencia || 0,
+                "Total ($)": v.total || 0
+            }));
+
+            // 2. Crear el libro de trabajo y la hoja de cálculo usando SheetJS
+            const worksheet = XLSX.utils.json_to_sheet(datosExportar);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Ventas Bingo");
+
+            // 3. Ajustar el ancho automático de las columnas para que se vea prolijo
+            const columnWidths = [
+                { wch: 22 }, // Fecha / Hora
+                { wch: 18 }, // Vendedor
+                { wch: 18 }, // Comprador
+                { wch: 18 }, // Cantidad Cartones
+                { wch: 15 }, // Forma de Pago
+                { wch: 18 }, // Monto Efectivo
+                { wch: 22 }, // Monto Transferencia
+                { wch: 12 }  // Total
+            ];
+            worksheet['!cols'] = columnWidths;
+
+            // 4. Descargar el archivo con formato .xlsx
+            const fechaStr = new Date().toISOString().slice(0, 10);
+            XLSX.writeFile(workbook, `Ventas_Bingo_${fechaStr}.xlsx`);
+        }
+
+        // --- BORRADO TOTAL / VACIAR BASE DE DATOS ---
+        async function borradoTotal() {
+            const confirmacion = confirm("⚠️ ¿ESTÁS SEGURO DE BORRAR TODO?\n\nEsta acción eliminará de forma permanente TODAS las ventas registradas en la base de datos para iniciar una nueva jugada.");
+            if (!confirmacion) return;
+
+            // Segunda verificación de seguridad
+            const confirmacionFinal = confirm("🚨 ÚLTIMA ADVERTENCIA:\n\nSe vaciará la planilla por completo. Asegúrate de haber descargado el archivo Excel antes de continuar.\n\n¿Deseas proceder?");
+            if (!confirmacionFinal) return;
+
+            // Limpieza local inmediata
+            dbVentas = [];
+            ventasFiltradasActuales = [];
+            actualizarTotalesGlobales();
+            actualizarFiltroVendedoresOptions();
+            aplicarFiltros();
+            document.getElementById('lastSaleCard').classList.add('hidden');
+
+            // Petición de purga al backend
+            if (SCRIPT_URL && SCRIPT_URL.trim() !== '') {
+                try {
+                    await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'text/plain' },
+                        body: JSON.stringify({ action: 'clear_all' })
+                    });
+                } catch (err) {
+                    console.warn("Error procesando borrado total en Google Sheets:", err);
+                }
+            }
+
+            alert("✅ La base de datos ha sido vaciada exitosamente. El sistema está listo para la siguiente jugada.");
+            setTimeout(cargarVentasHistorial, 1500);
+        }
+
+        // --- MODIFICAR Y BORRAR INDIVIDUALES ---
+
+        async function borrarRegistro(rowIndex) {
+            if (!confirm("¿Estás seguro de que deseas eliminar este registro?")) return;
+
+            dbVentas = dbVentas.filter(v => v.rowIndex !== rowIndex);
+            actualizarTotalesGlobales();
+            aplicarFiltros();
+
+            if (SCRIPT_URL && SCRIPT_URL.trim() !== '') {
+                try {
+                    await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'text/plain' },
+                        body: JSON.stringify({ action: 'delete', rowIndex: rowIndex })
+                    });
+                } catch (err) {
+                    console.warn("Error eliminando registro en Google Sheets:", err);
+                }
+            }
+            setTimeout(cargarVentasHistorial, 1000);
+        }
+
+        function abrirModalEditar(rowIndex) {
+            const registro = dbVentas.find(v => v.rowIndex === rowIndex);
+            if (!registro) return;
+
+            document.getElementById('editRowIndex').value = rowIndex;
+            document.getElementById('editVendedor').value = registro.vendedor;
+            document.getElementById('editComprador').value = registro.comprador || '';
+            document.getElementById('editCantidad').value = registro.cantidad;
+            document.getElementById('editFormaPago').value = registro.formaPago;
+            document.getElementById('editTotal').value = registro.total;
+
+            const modal = document.getElementById('editModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function cerrarModalEditar() {
+            const modal = document.getElementById('editModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const rowIndex = parseInt(document.getElementById('editRowIndex').value, 10);
+            const vendedor = document.getElementById('editVendedor').value.trim();
+            const comprador = document.getElementById('editComprador').value.trim();
+            const cantidad = parseInt(document.getElementById('editCantidad').value, 10) || 1;
+            const formaPago = document.getElementById('editFormaPago').value;
+            const total = parseFloat(document.getElementById('editTotal').value) || 0;
+
+            let montoEfectivo = formaPago === 'efectivo' ? total : 0;
+            let montoTransferencia = formaPago === 'transferencia' ? total : 0;
+
+            const payload = {
+                action: 'update',
+                rowIndex: rowIndex,
+                vendedor: vendedor,
+                comprador: comprador,
+                cantidad: cantidad,
+                formaPago: formaPago,
+                montoEfectivo: montoEfectivo,
+                montoTransferencia: montoTransferencia,
+                total: total
+            };
+
+            const btn = document.getElementById('btnGuardarEdit');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Guardando...`;
+
+            if (SCRIPT_URL && SCRIPT_URL.trim() !== '') {
+                try {
+                    await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'text/plain' },
+                        body: JSON.stringify(payload)
+                    });
+                } catch (err) {
+                    console.warn("Error actualizando registro en Google Sheets:", err);
+                }
+            }
+
+            cerrarModalEditar();
+            btn.disabled = false;
+            btn.textContent = "Guardar Cambios";
+
+            setTimeout(cargarVentasHistorial, 1200);
+        });
     </script>
 </body>
 
